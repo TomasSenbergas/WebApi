@@ -54,16 +54,23 @@ namespace P01_Intro.Controllers
             return _authors.Find(x => x.Id == id);
         }
 
-        [HttpGet("{id:int:min(1)}/books")]
+        [HttpGet("{id:int:min(1)}/Books")]
         public IEnumerable<Book>? GetBooksByAuthorId(int id)
         {
             return _books.Where(x => x.Autoriai.Any(author => author.Id == id));
         }
 
-        [HttpGet("{id:int:min(1)}/booksByTitle")]
+        [HttpGet("{id:int:min(1)}/BooksByTitle")]
         public IEnumerable<Book>? GetBooksByAuthorIdAndTitle([FromRoute] int id, [FromQuery] string? title)
         {
             return _books.Where(x => x.Autoriai.Any(author => author.Id == id) && (string.IsNullOrEmpty(title) || x.Pavadinimas.Contains(title)));
+        }
+
+
+        [HttpGet("{authorId:int:min(1)}/{bookId:int:min(1)}")]
+        public IEnumerable<Book>? GetBookByAuthorIdAndBookId(int authorId, int bookId)
+        {
+            return _books.Where(x => x.Autoriai.Any(author => author.Id == authorId) && x.Id == bookId);
         }
     }
 }
