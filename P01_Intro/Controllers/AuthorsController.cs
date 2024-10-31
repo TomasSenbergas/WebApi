@@ -8,12 +8,7 @@ namespace P01_Intro.Controllers
     [ApiController]
     public class AuthorsController : ControllerBase
     {
-        private readonly List<Author> _authors;
-        private readonly List<Book> _books;
-
-        public AuthorsController()
-        {
-            _authors = new List<Author>()
+        private static List<Author> _authors = new List<Author>()
             {
                 new Author(1, "Author 1", "Surname 1"),
                 new Author(2, "Author 2", "Surname 2"),
@@ -29,7 +24,9 @@ namespace P01_Intro.Controllers
                 new Author(12, "Author 12", "Surname 12"),
             };
 
-            _books = new List<Book>()
+
+
+        private static List<Book> _books = new List<Book>()
             {
                 new Book(1, "Book 1", new List<Author> { new Author(1, "Author 1", "Surname 1"), new Author(2, "Author 2", "Surname 2") }, 2021),
                 new Book(2, "Book 2", new List<Author> { new Author(3, "Author 3", "Surname 3"), new Author(4, "Author 4", "Surname 4") }, 2020),
@@ -41,6 +38,12 @@ namespace P01_Intro.Controllers
                 new Book(8, "Book 8", new List<Author> { new Author(12, "Author 12", "Surname 12"), new Author(10, "Author 10", "Surname 10") }, 2014),
 
             };
+
+        private static int _index = _authors.Count() + 1;
+
+        public AuthorsController()
+        {
+
         }
         [HttpGet]
         public IEnumerable<Author> GetAuthors()
@@ -54,23 +57,54 @@ namespace P01_Intro.Controllers
             return _authors.Find(x => x.Id == id);
         }
 
-        [HttpGet("{id:int:min(1)}/Books")]
-        public IEnumerable<Book>? GetBooksByAuthorId(int id)
+        //[HttpGet("{id:int:min(1)}/Books")]
+        //public IEnumerable<Book>? GetBooksByAuthorId(int id)
+        //{
+        //    return _books.Where(x => x.Autoriai.Any(author => author.Id == id));
+        //}
+
+        //[HttpGet("{id:int:min(1)}/BooksByTitle")]
+        //public IEnumerable<Book>? GetBooksByAuthorIdAndTitle([FromRoute] int id, [FromQuery] string? title)
+        //{
+        //    return _books.Where(x => x.Autoriai.Any(author => author.Id == id) && (string.IsNullOrEmpty(title) || x.Pavadinimas.Contains(title)));
+        //}
+
+
+        //[HttpGet("{authorId:int:min(1)}/{bookId:int:min(1)}")]
+        //public IEnumerable<Book>? GetBookByAuthorIdAndBookId(int authorId, int bookId)
+        //{
+        //    return _books.Where(x => x.Autoriai.Any(author => author.Id == authorId) && x.Id == bookId);
+        //}
+
+        // POST api/<AuthorsController>
+        [HttpPost]
+        public void Post([FromBody] AuthorDTO newAuthor)
         {
-            return _books.Where(x => x.Autoriai.Any(author => author.Id == id));
+            Author author = new Author { Id = _index++, Vardas = newAuthor.Vardas, Pavarde = newAuthor.Pavarde };
+            _authors.Add(author);
+        }
+        // PUT api/<AuthorsController>/5
+        [HttpPut("{id}")]
+        public void Put(int id, [FromBody] AuthorDTO newAuthor)
+        {
+            var author = _authors.FirstOrDefault(x => x.Id == id);
+            author.Vardas = newAuthor.Vardas;
+            author.Pavarde = newAuthor.Pavarde;
         }
 
-        [HttpGet("{id:int:min(1)}/BooksByTitle")]
-        public IEnumerable<Book>? GetBooksByAuthorIdAndTitle([FromRoute] int id, [FromQuery] string? title)
+        // DELETE api/<AuthorsController>/5
+        [HttpDelete("{id}")]
+        public void Delete(int id)
         {
-            return _books.Where(x => x.Autoriai.Any(author => author.Id == id) && (string.IsNullOrEmpty(title) || x.Pavadinimas.Contains(title)));
+            var author = _authors.FirstOrDefault(x => x.Id == id);
+            _authors.Remove(author);
         }
 
 
-        [HttpGet("{authorId:int:min(1)}/{bookId:int:min(1)}")]
-        public IEnumerable<Book>? GetBookByAuthorIdAndBookId(int authorId, int bookId)
-        {
-            return _books.Where(x => x.Autoriai.Any(author => author.Id == authorId) && x.Id == bookId);
-        }
+
+
+
+
+
     }
 }
